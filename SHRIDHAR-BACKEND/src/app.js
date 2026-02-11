@@ -75,21 +75,10 @@ app.use((req, res, next) => {
     req.body = mongoSanitize.sanitize(req.body);
     req.params = mongoSanitize.sanitize(req.params);
 
-    // Fix for Express 5: req.query might be read-only
-    try {
-        if (req.query) {
-            const sanitizedQuery = mongoSanitize.sanitize(req.query);
-            // Attempt to assign, if it fails, we iterate
-            req.query = sanitizedQuery;
-        }
-    } catch (err) {
-        // If assignment fails, try modifying properties
-        if (req.query && typeof req.query === 'object') {
-            const sanitized = mongoSanitize.sanitize(req.query);
-            Object.keys(req.query).forEach(key => delete req.query[key]);
-            Object.assign(req.query, sanitized);
-        }
+    if (req.query) {
+        mongoSanitize.sanitize(req.query);
     }
+
     next();
 });
 
