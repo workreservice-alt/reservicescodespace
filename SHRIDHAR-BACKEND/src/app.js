@@ -87,6 +87,15 @@ app.use((req, res, next) => {
 app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
+// Health check
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        message: 'Reservice API is running smoothly!',
+        version: '1.0.0'
+    });
+});
+
 // Routes
 app.use(maintenanceMiddleware);
 app.use('/api/v1', routes);
