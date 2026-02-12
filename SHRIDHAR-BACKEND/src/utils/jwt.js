@@ -24,13 +24,13 @@ const createSendToken = (user, statusCode, res, rememberMe = true) => {
     if (process.env.NODE_ENV === 'production') {
         cookieOptions.sameSite = 'none'; // Essential for Cross-Site (Vercel -> Render)
         cookieOptions.secure = true;     // Essential for SameSite=None
+        cookieOptions.domain = '.reservice.in'; // Share across subdomains
     } else {
         // DEVELOPMENT & LOCAL NETWORK TESTING
-        // Lax allows Top-Level navigation but might block fetch if not same-origin.
-        // For localhost:5173 -> localhost:5000, they are same-site but cross-origin.
         cookieOptions.sameSite = 'lax';
         cookieOptions.secure = false;
     }
+
 
     res.cookie('jwt', token, cookieOptions);
 

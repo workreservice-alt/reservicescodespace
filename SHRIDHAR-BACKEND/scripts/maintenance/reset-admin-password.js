@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
-const User = require('./src/models/User');
+const User = require(path.join(__dirname, '..', '..', 'src', 'models', 'User'));
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
 const resetAdmin = async () => {
     try {
@@ -15,7 +15,7 @@ const resetAdmin = async () => {
         console.log('Connected.');
 
         const email = 'admin@reservice.com';
-        const newPassword = 'adminpassword123';
+        const newPassword = 'Admin@1234';
 
         const admin = await User.findOne({ email });
         if (!admin) {

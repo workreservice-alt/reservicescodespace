@@ -69,20 +69,30 @@ exports.login = async (req, res, next) => {
         }
 
         // 2) Check if user exists && password is correct
+
         const user = await User.findOne({ email }).select('+password');
 
-        if (!user || !(await user.correctPassword(password, user.password))) {
+        if (!user) {
+            console.warn('[WARN] Login: User not found:', email);
+            return next(new AppError('Incorrect email or password', 401));
+        }
+
+        const isPasswordCorrect = await user.correctPassword(password, user.password);
+        if (!isPasswordCorrect) {
+            console.warn('[WARN] Login: Incorrect password for:', email);
             return next(new AppError('Incorrect email or password', 401));
         }
 
         // 3) Check if user is active
         if (user.isActive === false) {
+            console.warn('[WARN] Login: Account inactive:', email);
             return next(new AppError('Your account has been deactivated. Please contact support.', 403));
         }
 
         // 4) Role Isolation Check
-        // 4) Role Isolation Check
+
         if (req.body.role && req.body.role.toUpperCase() !== user.role.toUpperCase()) {
+            console.warn('[WARN] Login: Role mismatch for:', email);
             return next(new AppError('Incorrect email or password', 401));
         }
 
@@ -169,7 +179,8 @@ exports.googleAuthCallback = (req, res, next) => {
             ),
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            domain: process.env.NODE_ENV === 'production' ? '.reservice.in' : undefined
         };
         if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 

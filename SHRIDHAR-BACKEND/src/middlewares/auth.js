@@ -7,8 +7,6 @@ exports.protect = async (req, res, next) => {
     try {
         let token;
 
-        // 1) Getting token and check of it's there
-        // Check header (Mobile/Postman) OR Cookie (Browser)
         if (
             req.headers.authorization &&
             req.headers.authorization.startsWith('Bearer')
@@ -17,12 +15,6 @@ exports.protect = async (req, res, next) => {
         } else if (req.cookies.jwt) {
             token = req.cookies.jwt;
         }
-
-        // console.log('Auth Middleware Check:', {
-        //     path: req.path,
-        //     cookies: req.cookies ? Object.keys(req.cookies) : 'none',
-        //     hasToken: !!token
-        // });
 
         if (!token) {
             return next(new AppError('You are not logged in! Please log in to get access.', 401));
